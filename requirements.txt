@@ -1,16 +1,14 @@
 # FastAPI and ASGI Server
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-websockets==11.0.3
 
 # Database - MongoDB
 motor==3.3.2
 beanie==1.23.6
 pymongo==4.6.0
 
-# Redis for Pub/Sub and Caching  
+# Redis for Pub/Sub and Caching (optional - removed aioredis for compatibility)
 redis==5.0.1
-aioredis==2.0.1
 
 # Authentication & Security
 python-jose[cryptography]==3.3.0
@@ -27,29 +25,14 @@ pydantic-settings==2.1.0
 httpx==0.25.2
 aiofiles==23.2.1
 
-# Background Tasks
-celery==5.3.4
-
-# Email sending
-emails==0.6
-
-# Image processing for avatars
+# Image processing for avatars (stable version)
 Pillow==9.5.0
 
-
+# Rate limiting
 slowapi==0.1.9
 
-python-cors==1.0.0
-
+# Email validation
 email-validator==2.1.0
-phonenumbers==8.13.26
 
-
-pytest==7.4.3
-pytest-asyncio==0.21.1
-black==23.11.0
-isort==5.12.0
-flake8==6.1.0
-
-
+# Production server
 gunicorn==21.2.0

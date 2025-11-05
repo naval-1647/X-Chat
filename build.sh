@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Build script for Render deployment
+set -o errexit  # Exit on error
+
+echo "Installing Python dependencies..."
+pip install --upgrade pip
+pip install -r requirements.txt
+
+echo "Creating uploads directory..."
+mkdir -p uploads
+
+echo "Build completed successfully!"
