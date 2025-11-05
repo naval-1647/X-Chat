@@ -80,6 +80,7 @@ logs/
 uploads/
 media/
 static/
+config.py
 
 # Environment files
 .env.local
