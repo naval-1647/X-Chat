@@ -1,8 +1,8 @@
-# ChatX API - Real-Time Messaging Backend
+# Xchat - Real-Time Messaging Application
 
 ## 🚀 Overview
 
-ChatX is a comprehensive real-time messaging backend built with FastAPI, MongoDB, and Redis. It provides a complete solution for building modern chat applications with features like private/group messaging, real-time notifications, user management, and more.
+Xchat is a comprehensive real-time messaging application built with FastAPI backend, React frontend, MongoDB, and Redis. It provides a complete solution for modern chat applications with features like private/group messaging, real-time notifications, user management, media sharing, and more.
 
 ## 🧰 Tech Stack
 
@@ -275,7 +275,55 @@ pytest
 pytest --cov=app
 ```
 
-## 🚀 Deployment
+## 🚀 Free Deployment Options
+
+### Option 1: Render + Vercel + MongoDB Atlas
+
+**Backend (Render):**
+1. Create account on [Render.com](https://render.com)
+2. Connect your GitHub repository
+3. Create a new Web Service
+4. Set build command: `pip install -r requirements.txt`
+5. Set start command: `python -m uvicorn app:app --host 0.0.0.0 --port $PORT`
+6. Add environment variables:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string
+   - `JWT_SECRET_KEY`: Your secure JWT key
+   - Add other required environment variables
+
+**Frontend (Vercel):**
+1. Create account on [Vercel.com](https://vercel.com)
+2. Connect your GitHub repository
+3. Set root directory to `frontend`
+4. Build command: `npm run build`
+5. Output directory: `dist`
+
+**Database (MongoDB Atlas):**
+1. Create free account on [MongoDB Atlas](https://cloud.mongodb.com)
+2. Create a free cluster (512MB)
+3. Get connection string and add to backend environment
+
+### Option 2: Railway
+
+1. Create account on [Railway.app](https://railway.app)
+2. Deploy from GitHub repository
+3. Add MongoDB and Redis services
+4. Configure environment variables
+
+### Option 3: Heroku (Limited Free)
+
+1. Create Heroku account
+2. Install Heroku CLI
+3. Deploy backend and frontend separately
+4. Use Heroku Postgres or external MongoDB
+
+### Option 4: DigitalOcean App Platform
+
+1. Create DigitalOcean account
+2. Use App Platform for deployment
+3. Connect GitHub repository
+4. Configure build and run commands
+
+## 🚀 Production Deployment
 
 ### Production Checklist
 
