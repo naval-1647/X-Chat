@@ -1,0 +1,118 @@
+# Production Docker Compose
+version: '3.8'
+
+services:
+  # ChatX API Application
+  chatx-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: chatx-api-prod
+    environment:
+      # Database
+      - MONGODB_URI=mongodb://chatx-mongo:27017
+      - MONGODB_DATABASE=chatx_prod
+      
+      # Redis
+      - REDIS_HOST=chatx-redis
+      - REDIS_PORT=6379
+      - REDIS_URI=redis://chatx-redis:6379
+      
+      # App Settings
+      - DEBUG=False
+      - HOST=0.0.0.0
+      - PORT=8000
+      
+      # Security (CHANGE THESE IN PRODUCTION)
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      
+      # CORS
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      
+    depends_on:
+      - chatx-mongo
+      - chatx-redis
+    volumes:
+      - chatx-uploads:/app/uploads
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # MongoDB Database
+  chatx-mongo:
+    image: mongo:7
+    container_name: chatx-mongo-prod
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=chatx_prod
+    volumes:
+      - chatx-mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+
+  # Redis Cache & Pub/Sub
+  chatx-redis:
+    image: redis:7-alpine
+    container_name: chatx-redis-prod
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - chatx-redis-data:/data
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # Nginx Load Balancer
+  chatx-nginx:
+    image: nginx:alpine
+    container_name: chatx-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - chatx-static:/var/www/static
+    depends_on:
+      - chatx-api
+    networks:
+      - chatx-network
+    restart: unless-stopped
+
+# Networks
+networks:
+  chatx-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  chatx-mongo-data:
+    driver: local
+  chatx-redis-data:
+    driver: local
+  chatx-uploads:
+    driver: local
+  chatx-static:
+    driver: local

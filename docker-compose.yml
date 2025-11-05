@@ -1,0 +1,167 @@
+version: '3.8'
+
+services:
+  # ChatX API Application
+  chatx-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: chatx-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Database
+      - MONGODB_URI=mongodb://chatx-mongo:27017
+      - MONGODB_DATABASE=chatx_db
+      
+      # Redis
+      - REDIS_HOST=chatx-redis
+      - REDIS_PORT=6379
+      - REDIS_URI=redis://chatx-redis:6379
+      
+      # App Settings
+      - DEBUG=False
+      - HOST=0.0.0.0
+      - PORT=8000
+      
+      # Security (CHANGE THESE IN PRODUCTION)
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production
+      - ADMIN_PASSWORD=change-this-admin-password
+      
+      # CORS
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8080,http://localhost:3001
+      
+    depends_on:
+      - chatx-mongo
+      - chatx-redis
+    volumes:
+      - chatx-uploads:/app/uploads
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # MongoDB Database
+  chatx-mongo:
+    image: mongo:7
+    container_name: chatx-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=chatx
+      - MONGO_INITDB_ROOT_PASSWORD=chatx_password_change_this
+      - MONGO_INITDB_DATABASE=chatx_db
+    volumes:
+      - chatx-mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Redis Cache & Pub/Sub
+  chatx-redis:
+    image: redis:7-alpine
+    container_name: chatx-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - chatx-redis-data:/data
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy (Optional)
+  chatx-nginx:
+    image: nginx:alpine
+    container_name: chatx-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - chatx-static:/var/www/static
+    depends_on:
+      - chatx-api
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    profiles:
+      - production
+
+  # Monitoring with Prometheus (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: chatx-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - chatx-prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # Grafana Dashboard (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: chatx-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - chatx-grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - chatx-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+# Networks
+networks:
+  chatx-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  chatx-mongo-data:
+    driver: local
+  chatx-redis-data:
+    driver: local
+  chatx-uploads:
+    driver: local
+  chatx-static:
+    driver: local
+  chatx-prometheus-data:
+    driver: local
+  chatx-grafana-data:
+    driver: local
