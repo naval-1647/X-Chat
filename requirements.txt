@@ -1,38 +1,4 @@
-# FastAPI and ASGI Server
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-
-# Database - MongoDB
-motor==3.3.2
-beanie==1.23.6
-pymongo==4.6.0
-
-# Redis for Pub/Sub and Caching (optional - removed aioredis for compatibility)
-redis==5.0.1
-
-# Authentication & Security
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
-bcrypt==4.0.1
-
-# Environment & Configuration
-python-dotenv==1.0.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
-
-# HTTP Client for external APIs
-httpx==0.25.2
-aiofiles==23.2.1
-
-# Image processing for avatars (pre-built wheel available)
-Pillow==10.4.0
-
-# Rate limiting
-slowapi==0.1.9
-
-# Email validation
-email-validator==2.1.0
-
-# Production server
-gunicorn==21.2.0
+# Minimal requirements for deployment - avoiding compilation issues
+# Core FastAPI without problematic dependencies
+fastapi==0.95.2
+uvicorn==0.21.1
