@@ -3,8 +3,8 @@ services:
     name: xchat-api
     env: python
     runtime: python-3.11.10
-    buildCommand: pip install -r requirements-simple.txt
-    startCommand: uvicorn simple_app:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: python run_server.py
     plan: free
     envVars:
       - key: PYTHON_VERSION
