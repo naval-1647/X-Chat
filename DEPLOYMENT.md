@@ -74,13 +74,33 @@ gunicorn app:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
 
 ## 🐛 Troubleshooting:
 
+### If Pillow build fails (like you just experienced):
+**Solution 1: Use render.yaml (Recommended)**
+1. Your repo now has `render.yaml` - this forces Python 3.11.10 usage
+2. In Render dashboard, go to Settings → Build & Deploy
+3. Enable "Use Blueprint" and it will auto-detect `render.yaml`
+
+**Solution 2: Use minimal requirements**
+1. Temporarily rename `requirements.txt` to `requirements-full.txt`
+2. Rename `requirements-minimal.txt` to `requirements.txt`
+3. Deploy without Pillow (image processing will be limited)
+4. Once deployed, you can add Pillow back later
+
+**Solution 3: Manual Python version override**
+1. In Render Settings → Environment, add:
+   - `PYTHON_VERSION=3.11.10`
+2. Clear build cache and redeploy
+
 ### If deployment still fails:
 1. **Check logs** in Render dashboard
 2. **Verify MongoDB connection** string is correct
 3. **Make sure all environment variables** are set
 4. **Check if your MongoDB Atlas cluster** is accessible
+5. **Try the minimal requirements approach** (see above)
 
 ### Common Issues:
+- **Pillow build errors**: Use render.yaml or minimal requirements
+- **Python version mismatch**: Render sometimes ignores runtime.txt
 - **MongoDB connection**: Whitelist Render IPs in MongoDB Atlas
 - **Environment variables**: Double-check all required variables are set
 - **Build failures**: Check Python version compatibility
