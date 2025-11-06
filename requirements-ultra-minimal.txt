@@ -1,0 +1,26 @@
+# Ultra-minimal requirements for initial deployment
+# Core FastAPI without extras that cause compilation issues
+fastapi==0.95.2
+uvicorn==0.21.1
+
+# Simple MongoDB driver without Beanie ODM
+pymongo==4.3.3
+
+# Basic auth without bcrypt compilation
+python-jose==3.3.0
+passlib==1.7.4
+
+# Basic multipart support
+python-multipart==0.0.5
+
+# Environment variables
+python-dotenv==1.0.0
+
+# HTTP client
+httpx==0.24.0
+
+# File handling
+aiofiles==22.1.0
+
+# Production server
+gunicorn==20.1.0
