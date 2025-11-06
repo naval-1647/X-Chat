@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: xchat-api
+    env: python
+    runtime: python-3.11.10
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
+      - key: APP_NAME
+        value: Xchat API
+      - key: DEBUG
+        value: false
