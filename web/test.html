@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xchat Test Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4f46e5, #10b981);
+            color: white;
+            padding: 2rem;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .test-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .success { background: #10b981; }
+        .error { background: #ef4444; }
+        .loading { background: #f59e0b; }
+        a {
+            color: #4ade80;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            background: linear-gradient(135deg, #4f46e5, #10b981);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Xchat Local Development Test</h1>
+        <p>Testing all components of your local Xchat setup:</p>
+        
+        <div class="test-item">
+            <div>
+                <strong>Frontend Server (Port 3001)</strong>
+                <div>Serving static files and routing</div>
+            </div>
+            <div class="status success" id="frontend-status">✅ Running</div>
+        </div>
+        
+        <div class="test-item">
+            <div>
+                <strong>Backend API (Port 8000)</strong>
+                <div>FastAPI server with all endpoints</div>
+            </div>
+            <div class="status loading" id="backend-status">⏳ Testing...</div>
+        </div>
+        
+        <div class="test-item">
+            <div>
+                <strong>Main Chat Application</strong>
+                <div>Beautiful UI with embedded CSS</div>
+            </div>
+            <div>
+                <a href="/index.html" target="_blank">🚀 Launch App</a>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <div>
+                <strong>API Documentation</strong>
+                <div>Interactive Swagger docs</div>
+            </div>
+            <div>
+                <a href="http://localhost:8000/docs" target="_blank">📚 View Docs</a>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <div>
+                <strong>Quick Test Routes</strong>
+                <div>Test different URL patterns</div>
+            </div>
+            <div>
+                <button onclick="testRoutes()">🧪 Test Routes</button>
+            </div>
+        </div>
+        
+        <div id="test-results" style="margin-top: 2rem; display: none;">
+            <h3>🧪 Test Results:</h3>
+            <div id="results-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // Test backend API
+        async function testBackend() {
+            try {
+                const response = await fetch('http://localhost:8000/');
+                if (response.ok) {
+                    document.getElementById('backend-status').textContent = '✅ Running';
+                    document.getElementById('backend-status').className = 'status success';
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (error) {
+                document.getElementById('backend-status').textContent = '❌ Error';
+                document.getElementById('backend-status').className = 'status error';
+            }
+        }
+
+        // Test different routes
+        async function testRoutes() {
+            const routes = ['/login', '/register', '/chat', '/'];
+            const results = document.getElementById('results-content');
+            const testResults = document.getElementById('test-results');
+            
+            results.innerHTML = '';
+            testResults.style.display = 'block';
+            
+            for (const route of routes) {
+                try {
+                    const response = await fetch(route);
+                    const status = response.ok ? '✅' : '❌';
+                    results.innerHTML += `<div class="test-item">
+                        <span>${route}</span>
+                        <span>${status} ${response.status}</span>
+                    </div>`;
+                } catch (error) {
+                    results.innerHTML += `<div class="test-item">
+                        <span>${route}</span>
+                        <span>❌ Error</span>
+                    </div>`;
+                }
+            }
+        }
+
+        // Run tests on page load
+        window.onload = function() {
+            testBackend();
+        };
+    </script>
+</body>
+</html>
