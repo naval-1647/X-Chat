@@ -1,4 +1,0 @@
-# Absolute minimal requirements for simple_app.py deployment
-# Only what's needed for basic FastAPI to work
-fastapi==0.95.2
-uvicorn==0.21.1
