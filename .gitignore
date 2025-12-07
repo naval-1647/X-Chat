@@ -5,13 +5,15 @@ __pycache__/
 
 # C extensions
 *.so
-#
-build.sh/
-docker-compose.override.yml/
-docker-compose.yml/
-Dockerfile/
-render.yaml/   
-start.sh/
+
+# Project files to ignore
+build.sh
+docker-compose.override.yml
+docker-compose.yml
+Dockerfile
+render.yaml
+start.sh
+
 # Distribution / packaging
 .Python
 build/
