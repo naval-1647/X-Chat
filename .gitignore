@@ -103,6 +103,15 @@ temp/
 # Backup files
 *.bak
 *.backup
+requirements-*.txt
+requirements_*.txt
+
+# Debug and test scripts
+debug_*.sh
+test_*.py
+quick_test.py
+smart_start.sh
+start_robust.sh
 
 # Certificates
 *.pem
